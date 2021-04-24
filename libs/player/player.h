@@ -1,5 +1,10 @@
 #include <allegro5/allegro.h>
-#include "board.h"
+
+#ifndef __TRON_PLAYER_H__
+#define __TRON_PLAYER_H__
+
+#include "../player/player.h"
+#include "player_vertex_list.h"
 
 /**
  * @brief Enumerar as direções
@@ -23,10 +28,10 @@ typedef struct
     int color;
     TronDirection current_direction;
     TronPosition current_position;
-    VertList *first_position;
+    TronPlayerVertexList *first_position;
 } TronPlayer;
 
-TronPlayer *tron_player_constructor();     //
+TronPlayer *tron_player_constructor(char *name, int color);
 /**
  * @brief Free player allocation.
  * 
@@ -39,3 +44,8 @@ void tron_player_free(TronPlayer *player);
  * @param player O jogador a ser desenhado.
  */
 void tron_player_draw(TronPlayer *player);
+
+void tron_player_set_current_position(TronPlayer *player, size_t x, size_t y);
+
+void tron_player_move_player(TronPlayer *player, TronDirection new_direction);
+#endif

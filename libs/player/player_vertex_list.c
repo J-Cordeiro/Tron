@@ -1,10 +1,11 @@
-#include "board.h"
-#include "player_vextex_list.h"
+#include "player_vertex_list.h"
+
+#include "../utils/utils.h"
 
 TronPlayerVertexList *tron_player_vertex_list_constructor()
 {
-    TronPlayerVertexList *list = malloc(sizeof(TronPlayerVertexList));
-    TronPlayerVertexList **last = malloc(sizeof(TronPlayerVertexList *));
+    TronPlayerVertexList *list = tron_malloc(sizeof(TronPlayerVertexList));
+    TronPlayerVertexList **last = tron_malloc(sizeof(TronPlayerVertexList *));
     (*last) = NULL;
     list->position.x = 0;
     list->position.y = 0;
@@ -15,7 +16,7 @@ TronPlayerVertexList *tron_player_vertex_list_constructor()
 
 void tron_player_vertex_add(TronPlayerVertexList *list, size_t x, size_t y)
 {
-    TronPlayerVertexList *next = malloc(sizeof(TronPlayerVertexList));
+    TronPlayerVertexList *next = tron_malloc(sizeof(TronPlayerVertexList));
     next->position.x = x;
     next->position.y = y;
     next->next = NULL;

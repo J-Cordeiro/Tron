@@ -1,10 +1,7 @@
 #include <allegro5/allegro.h>
 
-typedef struct
-{
-    size_t x;
-    size_t y;
-} TronPosition;
+#ifndef __TRON_BOARD_H__
+#define __TRON_BOARD_H__
 
 typedef struct
 {
@@ -13,3 +10,4 @@ typedef struct
 } TronBoard;
 
 void tron_board_draw(TronBoard *board);
+#endif
