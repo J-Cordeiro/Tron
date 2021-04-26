@@ -49,6 +49,11 @@
 #define LOGO_WIDTH 1547
 #define LOGO_HEIGHT 599
 
+//About definitions
+#define ABOUT_BITMAP_PATH "assets/images/about.png"
+#define ABOUT_WIDTH 4627
+#define ABOUT_HEIGHT 1500
+
 // Button definitions
 #define BUTTON_BITMAP_PATH "assets/images/tronBigButton.png"
 #define BUTTON_WIDTH 1080

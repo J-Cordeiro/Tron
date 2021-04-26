@@ -5,7 +5,7 @@
 
 #include "../utils/utils.h"
 
-// Function to create a plaer vertex list
+// Function to create a player vertex list
 TronPlayerVertexList *tron_create_player_vertex_list(float x, float y) {
     TronPlayerVertexList *list = tron_malloc(sizeof(TronPlayerVertexList));
     TronPlayerVertexList **last = tron_malloc(sizeof(TronPlayerVertexList *));

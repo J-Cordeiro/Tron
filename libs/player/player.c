@@ -1,4 +1,4 @@
-// THIS DOCUMENT CONTAINS: 
+// THIS DOCUMENT CONTAINS:
 // The player functions used in the code
 
 #include "player.h"
@@ -139,7 +139,8 @@ bool tron_player_check_if_player_lost(TronPlayer *player, TronPlayerList *list, 
     TronPosition pos_1, pos_2, rect_pos_1, rect_pos_2;
     pos_2.x = pos_1.x = player->current_position.x;
     pos_2.y = pos_1.y = player->current_position.y;
-
+    //Cria uma linha na frente do player para verficar se tem algo nesta área
+    //(como se fosse o novo pedaço do jogador)
     switch (player->current_direction) {
         case TronTop:
             pos_1.y -= player_half_thickness;
@@ -157,10 +158,10 @@ bool tron_player_check_if_player_lost(TronPlayer *player, TronPlayerList *list, 
             pos_1.x -= player_half_thickness;
             pos_2.x -= size_check + player_half_thickness;
     }
+    //transforma a linha em retângulo
     tron_line_to_retangle(&rect_pos_1, &rect_pos_2, &pos_1, &pos_2, player_half_thickness - 1);
     TronPlayerListItem *item = list->first;
-    float half_thickness =
-        RECTANGLE_LINE_THICKNESS / 2 + player_half_thickness - 1;
+    float half_thickness = RECTANGLE_LINE_THICKNESS / 2 + player_half_thickness - 1;
     if (pos_2.x <= half_thickness ||
         pos_2.x >= board->width - half_thickness ||
         pos_2.y <= half_thickness ||
@@ -169,8 +170,7 @@ bool tron_player_check_if_player_lost(TronPlayer *player, TronPlayerList *list, 
     }
 
     while (item != NULL) {
-        if (tron_player_check_collision_at_rect(item->player, &rect_pos_1,
-                                                &rect_pos_2)) {
+        if (tron_player_check_collision_at_rect(item->player, &rect_pos_1, &rect_pos_2)) {
             return true;
         }
         item = item->next;
@@ -180,6 +180,7 @@ bool tron_player_check_if_player_lost(TronPlayer *player, TronPlayerList *list, 
 
 // Function to set player's new direction
 void tron_player_set_new_direction(TronPlayer *player, TronDirection new_direction) {
+    //Se player está vivo e pode ir para a nova direção
     if (player->live && player->current_direction != new_direction) {
         if ((new_direction == TronTop && player->current_direction != TronBottom) ||
             (new_direction == TronBottom && player->current_direction != TronTop) ||
@@ -187,9 +188,9 @@ void tron_player_set_new_direction(TronPlayer *player, TronDirection new_directi
             (new_direction == TronRight && player->current_direction != TronLeft)) {
             tron_player_vertex_add(player->first_position, player->current_position.x, player->current_position.y);
             player->current_direction = new_direction;
-            //musica Trocou a direção
+            //musica de Troca de direção, só toca se o player não é um bot
             if (player->type != TronPlayerBot)
-                al_play_sample(player_audio_turn, 0.7, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+                al_play_sample(player_audio_turn, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
         }
     }
 }
@@ -229,6 +230,7 @@ static bool tron_check_if_rectangles_overlap(
 }
 
 // Function to check the rectangles collision
+// Verfica em todos os traços do jogodor se jogador passou pelo retângulo (point_1 e point_2) 
 bool tron_player_check_collision_at_rect(TronPlayer *player, TronPosition *point_1, TronPosition *point_2) {
     TronPlayerVertexList *vertex = player->first_position;
     TronPosition rect_point_1, rect_point_2;
@@ -325,37 +327,52 @@ void tron_player_draw(TronPlayer *player, TronBoard *board) {
 
     float player_thickness = (float)PLAYER_THICKNESS * board->scale;
     TronPlayerVertexList *vertex = player->first_position;
-
+    //enquanto tiver traço para desenhar.
     while (vertex != NULL) {
+        // o primeiro ponto do traço.
         pos_1 = &vertex->position;
+        // o segundo ponto pode ser tanto o próximo vértice, quanto a posição do atual do jogador.
         if (vertex->next != NULL) {
             pos_2 = &vertex->next->position;
         } else {
             pos_2 = &player->current_position;
         }
-        tron_min_position(&start, pos_1, pos_2);
-        tron_max_position(&end, pos_1, pos_2);
 
+        //salva em start o ponto superior esquerdo
+        tron_min_position(&start, pos_1, pos_2);
+        //salva em end o ponto inferior direito
+        tron_max_position(&end, pos_1, pos_2);
+        //se o ambos os x são iguais, então o traço é vertical
         if (start.x == end.x) {
+            //Se o primeiro é o ponto superior, então o player está indo para baixo.
             if (start.y == pos_1->y) {
                 direction = TronBottom;
             } else {
                 direction = TronTop;
             }
+            // a textura vertical será usada para este traço.
             player_bitmap = player_bitmap_vertical;
+            //É engroçado a linha para caber a textura
             start.x -= PLAYER_THICKNESS;
             end.x += PLAYER_THICKNESS;
+            //se não
         } else {
+            //Se o primeiro é o ponto esquerdo, então o player está indo para a direita.
             if (start.x == pos_1->x) {
                 direction = TronRight;
             } else {
                 direction = TronLeft;
             }
+            // a textura horizontal será usada para este traço.
             player_bitmap = player_bitmap_horizontal;
+            //É engroçado a linha para caber a textura
             start.y -= PLAYER_THICKNESS;
             end.y += PLAYER_THICKNESS;
         }
         if (!first_vertex) {
+            // corner_delta é um valor que multiplicado pelo tamanho do player retorna o deslocamento
+            // em relação do fim do traço do player
+            // da borda da curva em relação do fim do traço do player
             switch (old_direction) {
                 case TronTop:
                     switch (direction) {
@@ -410,6 +427,7 @@ void tron_player_draw(TronPlayer *player, TronBoard *board) {
                     }
                     break;
             }
+            //draws the edge of a curve
             al_draw_tinted_scaled_bitmap(corner_bitmap, player->color,
                                          0, 0, PLAYER_CORNER_WIDTH, PLAYER_CORNER_HEIGHT,
                                          (board->x + pos_1->x + corner_delta.x * PLAYER_THICKNESS) * board->scale,
@@ -418,6 +436,7 @@ void tron_player_draw(TronPlayer *player, TronBoard *board) {
                                          player_thickness,
                                          0);
         }
+        // draw a line
         al_draw_tinted_scaled_bitmap(player_bitmap, player->color,
                                      0, 0, PLAYER_WIDTH, PLAYER_WIDTH,
                                      (board->x + start.x) * board->scale,
@@ -441,7 +460,7 @@ TronPlayerList *tron_create_player_list() {
     return list;
 }
 
-// Function to clear player list
+// Function to clear player list (delete all player)
 void tron_player_list_flush(TronPlayerList *list) {
     TronPlayerListItem *item = list->first;
     TronPlayerListItem *item_next;

@@ -14,8 +14,6 @@
 #include "../utils/utils.h"
 
 static ALLEGRO_SAMPLE *board_gameover_audio = NULL;
-/* ALLEGRO_SAMPLE *board_intromusic_audio = NULL;
- */
 
 // Function to load the tron board
 void tron_board_load() {
@@ -24,18 +22,11 @@ void tron_board_load() {
         printf("Could not load gameover audio.");
         exit(-1);
     }
-    /*  if (!board_intromusic_audio) {
-        printf("Could not load introMusic audio.");
-        exit(-1);
-    }  board_intromusic_audio = al_load_sample("assets/audio/introMusic.wav");*/
 }
 
 // Function to unload the board
 void tron_board_unload() {
-/*     al_destroy_sample(board_game_audio);
- */    al_destroy_sample(board_gameover_audio);
-    /*     al_destroy_sample(board_intromusic_audio);
- */
+    al_destroy_sample(board_gameover_audio);
 }
 
 // Function to read player2 keyboard keys

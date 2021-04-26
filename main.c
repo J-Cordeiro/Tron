@@ -44,8 +44,7 @@ static ALLEGRO_SAMPLE *menu_audio = NULL;
 static ALLEGRO_SAMPLE_ID menu_audio_id;
 
 // Bitmap variable
-static ALLEGRO_BITMAP *
-    player_bitmap_controls;
+static ALLEGRO_BITMAP *player_bitmap_controls;
 
 // Function to render the intro gameplay
 void gameplay_render(TronBoard *board, TronPlayerList *player_list) {
@@ -55,14 +54,17 @@ void gameplay_render(TronBoard *board, TronPlayerList *player_list) {
     TronPlayerListItem *item = player_list->first;
     while (item != NULL) {
         tron_player_draw(item->player, board);
+        // O jogador está morto
         if (!item->player->live) {
+            //Se ele for um bot então a messagem de fim de jogo é WIN
             if (item->player->type == TronPlayerBot) {
                 is_win = true;
             } else {
+                //Se ele for um player então a messagem de fim de jogo é GAMEOVER
                 is_win = false;
             }
         }
-
+        //Exibe os controles do jogadores
         if (!board->gameover && item->player->type == TronPlayerKeyboard1) {
             al_draw_tinted_scaled_bitmap(player_bitmap_controls, al_map_rgba(128, 128, 128, 1),
                                          0, 0, PLAYER_CONTROLS_WIDTH / 2, PLAYER_CONTROLS_HEIGHT,
@@ -70,6 +72,7 @@ void gameplay_render(TronBoard *board, TronPlayerList *player_list) {
                                          150 * board->scale,
                                          (150 * board->scale) / (PLAYER_CONTROLS_WIDTH / 2) * PLAYER_CONTROLS_HEIGHT, 0);
         }
+
         if (!board->gameover && item->player->type == TronPlayerKeyboard2) {
             al_draw_tinted_scaled_bitmap(player_bitmap_controls, al_map_rgba(128, 128, 128, 1),
                                          PLAYER_CONTROLS_WIDTH / 2, 0, PLAYER_CONTROLS_WIDTH / 2, PLAYER_CONTROLS_HEIGHT,
@@ -79,6 +82,7 @@ void gameplay_render(TronBoard *board, TronPlayerList *player_list) {
         }
         item = item->next;
     }
+    //Escurece a tela e exibe a messagem de fim de jogo
     if (board->gameover) {
         al_draw_filled_rectangle(0, 0, current_width, current_height, al_map_rgba(0, 0, 0, 128));
         if (is_win) {
@@ -110,9 +114,10 @@ void gameplay_resize(TronBoard *board, int width, int height) {
 void create_player_game(TronBoard *board, TronPlayerList *player_list, TronPlayerType second_player_type) {
     // musica game audio
     al_stop_sample(&menu_audio_id);
+
     al_stop_sample(&board_game_audio_id);
 
-    al_play_sample(board_game_audio, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, &board_game_audio_id);
+    al_play_sample(board_game_audio, 0.5, 0, 1, ALLEGRO_PLAYMODE_ONCE, &board_game_audio_id);
 
     tron_player_list_flush(player_list);
 
@@ -237,7 +242,7 @@ int main(void) {
         exit(-1);
     }
 
-    al_play_sample(menu_audio, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, &menu_audio_id);
+    al_play_sample(menu_audio, 0.5, 0, 1, ALLEGRO_PLAYMODE_LOOP, &menu_audio_id);
 
     board_game_audio = al_load_sample(AUDIO_GAME_SOUNDTRACK_PATH);
     if (!board_game_audio) {
@@ -245,10 +250,10 @@ int main(void) {
         exit(-1);
     }
 
-    // Allegro loop
+    // Allegro game loop
     while (true) {
         ALLEGRO_EVENT event;
-
+        // Se tiver novo event
         if (al_get_next_event(event_queue, &event)) {
             if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE || first_paint) {
                 first_paint = false;
@@ -259,8 +264,10 @@ int main(void) {
                 gameplay_resize(board, current_width, current_height);
             }
 
-            if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && event.mouse.button & 1) {
+            if ((event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP && event.mouse.button & 1)) {
                 if (state != MainMenu && board->gameover) {
+                    //Para limpar a fila de event.
+                    tron_menu_update();
                     state = MainMenu;
                     new_state = MainMenu;
                 }

@@ -1,4 +1,4 @@
-// THIS DOCUMENT CONTAINS: 
+// THIS DOCUMENT CONTAINS:
 // The menu structs used in the code
 
 #ifndef __TRON_MENU_H__
@@ -23,6 +23,7 @@ typedef struct {
     ALLEGRO_EVENT_QUEUE *event_queue;
 
     ALLEGRO_BITMAP *logo_bitmap;
+    ALLEGRO_BITMAP *about_bitmap;
     ALLEGRO_BITMAP *button_bitmap;
 
     ALLEGRO_FONT *button_font;
@@ -30,6 +31,9 @@ typedef struct {
 
     TronPosition logo_position;
     TronPosition logo_size;
+
+    TronPosition about_position;
+    TronPosition about_size;
 
     TronPosition button_size;
     TronPosition button_single_player_position;

@@ -70,14 +70,21 @@ void tron_menu_load() {
     menu.board = tron_create_board(0, 0, 600, 350);
     menu.board->sound = false;
 
-    menu.logo_bitmap = al_load_bitmap("./assets/images/logo.png");
+    menu.logo_bitmap = al_load_bitmap(LOGO_BITMAP_PATH);
 
     if (!menu.logo_bitmap) {
         printf("Couldn't not load logo menu bitmap.'");
         exit(-1);
     }
 
-    menu.button_bitmap = al_load_bitmap("./assets/images/tronBigButton.png");
+    menu.about_bitmap = al_load_bitmap(ABOUT_BITMAP_PATH);
+
+    if (!menu.about_bitmap) {
+        printf("Couldn't not load about bitmap.'");
+        exit(-1);
+    }
+
+    menu.button_bitmap = al_load_bitmap(BUTTON_BITMAP_PATH);
 
     if (!menu.button_bitmap) {
         printf("Couldn't not load button bitmap.'");
@@ -129,11 +136,19 @@ void tron_menu_resize(int width, int height) {
     menu.board->x = ((width - RECTANGLE_LINE_THICKNESS * 2 - (menu.board->scale * board_width_full)) / 2) / menu.board->scale;
     menu.board->y = ((height - RECTANGLE_LINE_THICKNESS * 2 - (menu.board->scale * board_height_full)) / 2) / menu.board->scale;
 
+    //ABOUT message position and size
+    menu.about_size.x = (float)width / 4;
+    menu.about_size.y = (double)menu.about_size.x / ABOUT_WIDTH * ABOUT_HEIGHT;
+    menu.about_position.x = (double)(width - menu.about_size.x - 20);
+    menu.about_position.y = (double)(height - menu.about_size.y - 20);
+
+    //LOGO position and size
     menu.logo_size.x = (float)width / 4;
     menu.logo_size.y = (double)menu.logo_size.x / LOGO_WIDTH * LOGO_HEIGHT;
     menu.logo_position.x = (double)(width - menu.logo_size.x) / 2;
     menu.logo_position.y = 10 * menu.board->scale;
 
+    //button position and size
     menu.button_size.x = (float)width / 4;
     menu.button_size.y = (double)menu.button_size.x / BUTTON_WIDTH * BUTTON_HEIGHT;
     menu.button_single_player_position.x = (double)(width - menu.button_size.x) / 2;
@@ -141,6 +156,7 @@ void tron_menu_resize(int width, int height) {
 
     menu.button_single_player_position.y = (double)(height - menu.button_size.y) / 2;
     menu.button_two_player_position.y = (double)(height - menu.button_size.y + menu.button_size.y - (double)BUTTON_HEIGHT * 0.05) / 2;
+
     load_fonts();
 }
 
@@ -233,6 +249,13 @@ void tron_menu_render() {
                           menu.logo_position.y,
                           menu.logo_size.x,
                           menu.logo_size.y, 0);
+
+    al_draw_scaled_bitmap(menu.about_bitmap,
+                          0, 0, ABOUT_WIDTH, ABOUT_HEIGHT,
+                          menu.about_position.x,
+                          menu.about_position.y,
+                          menu.about_size.x,
+                          menu.about_size.y, 0);
 
     draw_button(&menu.button_single_player_position, "1 Jogador", menu.button_single_player_hover);
     draw_button(&menu.button_two_player_position, "2 Jogadores", menu.button_two_player_hover);
