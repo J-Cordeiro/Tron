@@ -11,6 +11,16 @@
         "allegro.h": "c",
         "player_list.h": "c",
         "altime.h": "c",
-        "base.h": "c"
+        "base.h": "c",
+        "stdio.h": "c",
+        "players_list.h": "c",
+        "ranges": "c",
+        "condition_variable": "c",
+        "allegro_ttf.h": "c",
+        "allegro_primitives.h": "c",
+        "allegro_font.h": "c",
+        "allegro_acodec.h": "c",
+        "list": "c",
+        "menu.h": "c"
     }
 }

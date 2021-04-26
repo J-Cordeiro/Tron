@@ -1,3 +1,6 @@
+// THIS DOCUMENT CONTAINS: 
+// The utilitary structures used in the code
+
 #ifndef __TRON_UTILS_H__
 #define __TRON_UTILS_H__
 
